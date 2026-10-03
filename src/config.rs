@@ -20,6 +20,8 @@ pub struct Config {
     pub warp_binary: String,
     /// Warp SOCKS5 proxy address (proxy mode). Default 127.0.0.1:40000.
     pub warp_socks: String,
+    /// HTTP proxy listener addresses (comma-separated). Empty = disabled.
+    pub http_identities: Vec<String>,
     /// Rotate every N requests per identity (0 = disabled).
     pub rotate_every_reqs: u64,
     /// Rotate every N minutes per identity (0 = disabled).
@@ -49,6 +51,12 @@ impl Config {
                 }
             }),
             warp_socks: env::var("RP_WARP_SOCKS").unwrap_or_else(|_| "127.0.0.1:40000".to_string()),
+            http_identities: env::var("RP_HTTP_IDENTITIES")
+                .unwrap_or_default()
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect(),
             rotate_every_reqs: env::var("RP_ROTATE_EVERY_REQS")
                 .ok()
                 .and_then(|s| s.parse().ok())

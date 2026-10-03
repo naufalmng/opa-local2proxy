@@ -11,6 +11,7 @@
 mod backend;
 mod config;
 mod socks5;
+mod http_proxy;
 mod api;
 
 use std::sync::Arc;
@@ -45,6 +46,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         handles.push(tokio::spawn(async move {
             if let Err(e) = socks5::run_listener(addr, router, port_id, rotate_every_reqs, rotate_mins).await {
                 error!("SOCKS5 listener {} error: {}", addr, e);
+            }
+        }));
+    }
+
+    // Spawn HTTP proxy listeners (one per http identity)
+    for (i, listen) in cfg.http_identities.iter().enumerate() {
+        let router = router.clone();
+        let port_id = i;
+        let addr: std::net::SocketAddr = listen.parse()?;
+        handles.push(tokio::spawn(async move {
+            if let Err(e) = http_proxy::run_http_listener(addr, router, port_id).await {
+                error!("HTTP listener {} error: {}", addr, e);
             }
         }));
     }
