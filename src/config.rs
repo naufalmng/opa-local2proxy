@@ -42,7 +42,11 @@ impl Config {
             tor_control: env::var("RP_TOR_CONTROL").unwrap_or_else(|_| "127.0.0.1:9051".to_string()),
             tor_control_password: env::var("RP_TOR_CONTROL_PASSWORD").unwrap_or_default(),
             warp_binary: env::var("RP_WARP_BINARY").unwrap_or_else(|_| {
-                r"C:\Program Files\Cloudflare\Cloudflare WARP\warp-cli.exe".to_string()
+                if cfg!(target_os = "windows") {
+                    r"C:\Program Files\Cloudflare\Cloudflare WARP\warp-cli.exe".to_string()
+                } else {
+                    "warp-cli".to_string()
+                }
             }),
             warp_socks: env::var("RP_WARP_SOCKS").unwrap_or_else(|_| "127.0.0.1:40000".to_string()),
             rotate_every_reqs: env::var("RP_ROTATE_EVERY_REQS")
