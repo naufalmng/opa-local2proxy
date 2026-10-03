@@ -1,4 +1,4 @@
-//! rotating-proxy — rotating residential proxy (Tor + Warp) with multi-port sticky identities.
+//! opa-local2proxy — rotating residential proxy (Tor + Warp) with multi-port sticky identities.
 //!
 //! Architecture:
 //!   [client] -> SOCKS5 listener (127.0.0.1:10800..1080N, one per "identity")
@@ -22,12 +22,12 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     tracing_subscriber::fmt()
         .with_env_filter(
             tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "rotating_proxy=info".into()),
+                .unwrap_or_else(|_| "opa_local2proxy=info".into()),
         )
         .init();
 
     let cfg = config::Config::load();
-    info!("rotating-proxy starting: {:?}", cfg);
+    info!("opa-local2proxy starting: {:?}", cfg);
 
     // Build backends
     let backends = backend::build_backends(&cfg).await?;

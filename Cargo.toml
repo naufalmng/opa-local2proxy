@@ -1,5 +1,5 @@
 [package]
-name = "rotating-proxy"
+name = "opa-local2proxy"
 version = "0.1.0"
 edition = "2021"
 description = "Rotating residential proxy from local machine — Tor + Cloudflare Warp multi-port backend with auto IP rotation"

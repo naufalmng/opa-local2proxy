@@ -1,4 +1,4 @@
-# rotating-proxy
+# opa-local2proxy
 
 Rotating residential proxy from your local machine — **Tor + Cloudflare Warp** multi-port
 backend with automatic IP rotation. No monthly subscription.
@@ -70,14 +70,14 @@ Set `RP_WARP_BINARY` to the `warp-cli` full path (default Windows path is pre-se
 
 ```bash
 cargo build --release
-# binary at target/release/rotating-proxy
+# binary at target/release/opa-local2proxy
 ```
 
 ## Run
 
 ```bash
 # defaults: 3 identities (10800-10802), both backends, API on 10808
-./rotating-proxy
+./opa-local2proxy
 ```
 
 ### Configuration (env vars)
