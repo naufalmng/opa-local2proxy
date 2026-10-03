@@ -10,6 +10,8 @@ that speaks SOCKS5).
 
 - **Multi-port sticky identities** — each port (10800, 10801, 10802…) is its own "identity"
   holding one exit IP until you rotate it.
+- **HTTP proxy mode** — optional HTTP proxy listener (CONNECT tunnel + absolute-URI) via
+  `RP_HTTP_IDENTITIES`, for clients that only speak HTTP proxy (e.g. many Node/Next.js apps).
 - **Auto IP rotation** — per N requests (`RP_ROTATE_EVERY_REQS`) or per N minutes (`RP_ROTATE_MINS`).
 - **Dual backend** — round-robin between **Tor** (real rotating exit nodes) and **Cloudflare Warp**
   (cleaner Cloudflare-range IPs, better for anti-bot).
@@ -92,6 +94,7 @@ cargo build --release
 | `RP_TOR_CONTROL_PASSWORD` | `` | Tor control auth (empty = no-auth) |
 | `RP_WARP_BINARY` | `warp-cli.exe` (Windows path) | warp-cli path |
 | `RP_WARP_SOCKS` | `127.0.0.1:40000` | Warp proxy-mode SOCKS5 endpoint |
+| `RP_HTTP_IDENTITIES` | `` (disabled) | HTTP proxy listener addrs (comma-separated) |
 | `RP_ROTATE_EVERY_REQS` | `0` | rotate each identity every N requests (0=off) |
 | `RP_ROTATE_MINS` | `0` | rotate each identity every N minutes (0=off) |
 
@@ -117,6 +120,31 @@ print(requests.get("http://lumtest.com/myip.json", proxies=proxies).text)
 ```
 
 Playwright / Puppeteer: set the browser proxy to `socks5://127.0.0.1:10800`.
+
+## HTTP proxy mode
+
+For clients that only speak HTTP proxy (Node/Next.js apps, tools without SOCKS5 support),
+run with `RP_HTTP_IDENTITIES`:
+
+```bash
+RP_BACKENDS=warp RP_HTTP_IDENTITIES=127.0.0.1:10810 ./opa-local2proxy
+```
+
+Then point the client at `http://127.0.0.1:10810` (supports both `CONNECT` tunneling for
+HTTPS and absolute-URI forwarding for plain HTTP).
+
+## systemd service
+
+A ready-to-use unit file is in `deploy/opa-local2proxy.service`. Install:
+
+```bash
+sudo cp deploy/opa-local2proxy.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now opa-local2proxy
+```
+
+It runs with Warp backend + HTTP proxy on `127.0.0.1:10810` + SOCKS5 on `127.0.0.1:10900`,
+auto-starts on boot and restarts on failure.
 
 ## Notes
 

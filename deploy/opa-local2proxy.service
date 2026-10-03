@@ -1,0 +1,18 @@
+[Unit]
+Description=opa-local2proxy HTTP/SOCKS proxy gateway (Warp upstream)
+After=network-online.target warp-svc.service
+Wants=network-online.target warp-svc.service
+
+[Service]
+Type=simple
+User=nauxium
+Environment=RP_BACKENDS=warp
+Environment=RP_HTTP_IDENTITIES=127.0.0.1:10810
+Environment=RP_IDENTITIES=127.0.0.1:10900
+Environment=RP_API=127.0.0.1:10809
+ExecStart=/usr/local/bin/opa-local2proxy
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
